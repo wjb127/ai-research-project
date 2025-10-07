@@ -9,7 +9,7 @@ interface SearchBarProps {
 
 export default function SearchBar({ compact = false }: SearchBarProps) {
   const [inputValue, setInputValue] = useState('');
-  const { setQuery, setIsSearching, setSources, setReport, reset } = useSearchStore();
+  const { setQuery, setIsSearching, setSources, reset } = useSearchStore();
 
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();

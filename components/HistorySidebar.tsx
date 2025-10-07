@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSearchStore } from '@/store/useSearchStore';
+import { SearchHistory } from '@/types';
 
 interface HistorySidebarProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export default function HistorySidebar({ isOpen, onClose }: HistorySidebarProps)
     if (isOpen) {
       fetchHistory();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const fetchHistory = async () => {
@@ -29,7 +31,7 @@ export default function HistorySidebar({ isOpen, onClose }: HistorySidebarProps)
     }
   };
 
-  const handleSelectHistory = (item: any) => {
+  const handleSelectHistory = (item: SearchHistory) => {
     setQuery(item.query);
     setSources(item.sources || []);
     setReport(item.report);
