@@ -1,7 +1,7 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 
 const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
-const PERPLEXITY_API_URL = 'https://api.perplexity.ai/chat/completions';
+const PERPLEXITY_API_URL = 'https://api.perplexity.ai/search';
 
 export const handler: Handler = async (event: HandlerEvent) => {
   // CORS headers
@@ -50,20 +50,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a research assistant. Provide detailed, accurate information with sources.',
-          },
-          {
-            role: 'user',
-            content: query,
-          },
-        ],
-        temperature: 0.2,
-        return_citations: true,
-        search_recency_filter: 'month',
+        query: [query],
       }),
     });
 
@@ -82,14 +69,14 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
     const data = await response.json();
 
-    // Extract sources from citations
-    const sources = data.citations?.map((citation: any, index: number) => ({
-      title: `Source ${index + 1}`,
-      url: citation,
-      snippet: data.choices[0]?.message?.content?.slice(0, 200) || '',
+    // Extract sources from search results
+    const sources = data.results?.map((result: any) => ({
+      title: result.title || 'Untitled',
+      url: result.url || '',
+      snippet: result.snippet || result.description || '',
     })) || [];
 
-    const answer = data.choices[0]?.message?.content || '';
+    const answer = sources.map((s: any) => s.snippet).join('\n\n');
 
     return {
       statusCode: 200,
